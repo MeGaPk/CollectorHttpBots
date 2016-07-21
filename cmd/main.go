@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"github.com/gorilla/handlers"
+	"flag"
 )
 
 var db *database.DatabaseConnection
@@ -41,10 +42,14 @@ func GetUrls(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+var port int
+
 func main() {
+	flag.IntVar(&port, "port", 8080, "port number for http server")
+	flag.Parse()
 	db = database.New("db.sqlite3")
 	r := http.NewServeMux()
 	r.HandleFunc("/get_urls", GetUrls)
 	r.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(handler)))
-	http.ListenAndServe(":8080", handlers.CompressHandler(r))
+	http.ListenAndServe(fmt.Sprintf(":%d", port), handlers.CompressHandler(r))
 }

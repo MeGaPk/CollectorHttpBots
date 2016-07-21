@@ -1,1 +1,1 @@
-# fake_http_server
+# Collector bots data
