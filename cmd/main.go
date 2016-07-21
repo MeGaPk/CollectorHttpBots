@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/megapk/fake_http_server/database"
+	"../database"
 	"encoding/json"
 	"io/ioutil"
 	"os"
