@@ -32,7 +32,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUrls(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(db.GetUrls())
+	js, err := json.MarshalIndent(db.GetUrls(), "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -43,7 +43,8 @@ func GetUrls(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	db = database.New("db.sqlite3")
-	http.HandleFunc("/get_urls", GetUrls)
-	http.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(handler)))
-	http.ListenAndServe(":8080", nil)
+	r := http.NewServeMux()
+	r.HandleFunc("/get_urls", GetUrls)
+	r.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(handler)))
+	http.ListenAndServe(":8080", handlers.CompressHandler(r))
 }
