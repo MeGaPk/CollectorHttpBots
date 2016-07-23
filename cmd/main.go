@@ -44,12 +44,31 @@ func GetUrls(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+var type_database string
 var port int
+var hostname string
+var port_database int
+var login string
+var password string
+var dbname string
 
 func main() {
+	flag.StringVar(&type_database, "type_database", "sqlite", "type (mysql/sqlite)")
+	flag.StringVar(&hostname, "hostname", "127.0.0.1", "hostname")
+	flag.StringVar(&login, "login", "root", "login")
+	flag.StringVar(&password, "password", "root", "password")
+	flag.StringVar(&dbname, "dbname", "db", "database name")
+	flag.IntVar(&port_database, "port_database", 3306, "port number for mysql server")
 	flag.IntVar(&port, "port", 8080, "port number for http server")
 	flag.Parse()
-	db = database.New("db.sqlite3")
+	db = nil;
+	if (type_database == "mysql") {
+		db = database.NewMySQL(hostname, port_database, login, password, dbname)
+	} else {
+		db = database.NewSqlite3("db.sqlite3")
+	}
+	db.AutoMigrate(&database.Bot{})
+
 	r := http.NewServeMux()
 	r.HandleFunc("/get_urls", GetUrls)
 	r.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(handler)))
