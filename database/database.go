@@ -12,6 +12,7 @@ type Bot struct {
 	Body string
 	Form string
 	PostForm string
+	RemoteIp string
 }
 
 

@@ -17,6 +17,7 @@ var db *database.DatabaseConnection
 func handler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	link := r.URL.String()
+	remote_ip := r.RemoteAddr
 	fmt.Fprintf(w, "My url: %s", link)
 
 	header, _ := json.Marshal(r.Header)
@@ -29,6 +30,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		Body: string(body),
 		Form: string(form),
 		PostForm: string(postForm),
+		RemoteIp: remote_ip,
 	})
 }
 
