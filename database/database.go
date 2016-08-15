@@ -20,7 +20,7 @@ type Bot struct {
 type PasteText struct {
 	gorm.Model
 	Code string `gorm:"primary_key"`
-	Text string
+	Text string `gorm:"size:999999999"`
 }
 
 type DatabaseConnection struct {
