@@ -46,24 +46,30 @@ func GetUrls(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetText(w http.ResponseWriter, r *http.Request) {
-	code := string(r.Header.Get("code"))
-	w.Write(db.GetText(code))
+	code := r.URL.Query().Get("code")
+	text := db.GetText(code).Text
+	w.Write([]byte(text))
 }
 
 func AddText(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	token := string(r.Header.Get("token"))
 	if (token != "Tosterito112Toster112") {
-		w.Write("Something wrong...")
+		w.Write([]byte("Something wrong..."))
 		return
 	}
-	text := string(r.Body)
-	code := uuid.NewV4()
+	body, err := ioutil.ReadAll(r.Body);
+	if (err != nil) {
+		w.Write([]byte(err.Error()))
+		return
+	}
+	text := string(body)
+	code := uuid.NewV4().String()
 	db.AddText(&database.PasteText{
 		Code: code,
 		Text:text,
 	})
-	w.Write(code)
+	w.Write([]byte("/uploader/get_text?code="+code))
 }
 
 var type_database string
@@ -89,7 +95,7 @@ func main() {
 	} else {
 		db = database.NewSqlite3("db.sqlite3")
 	}
-	db.AutoMigrate(&database.Bot{})
+	db.AutoMigrate(&database.Bot{}, &database.PasteText{})
 
 	r := http.NewServeMux()
 	r.HandleFunc("/get_urls", GetUrls)
