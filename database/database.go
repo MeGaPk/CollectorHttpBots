@@ -17,6 +17,12 @@ type Bot struct {
 	RemoteIp string
 }
 
+type PasteText struct {
+	gorm.Model
+	Code string `gorm:"primary_key"`
+	Text string
+}
+
 type DatabaseConnection struct {
 	*gorm.DB
 }
@@ -24,7 +30,7 @@ type DatabaseConnection struct {
 func NewSqlite3(databasePath string) *DatabaseConnection {
 	db, err := gorm.Open("sqlite3", databasePath)
 	if err != nil {
-		panic("failed to connect database sqlite, error: "+err.Error())
+		panic("failed to connect database sqlite, error: " + err.Error())
 	}
 	// Migrate the schema
 	return &DatabaseConnection{db}
@@ -35,7 +41,7 @@ func NewMySQL(host string, port int, login string, password string, dbname strin
 	fmt.Println(scheme_url)
 	db, err := gorm.Open("mysql", scheme_url)
 	if err != nil {
-		panic("failed to connect database mysql, error: "+err.Error())
+		panic("failed to connect database mysql, error: " + err.Error())
 	}
 	// Migrate the schema
 	return &DatabaseConnection{db}
@@ -48,4 +54,13 @@ func (db *DatabaseConnection) GetUrls() (bots []Bot) {
 
 func (db *DatabaseConnection) AddUrl(bot *Bot) {
 	db.Create(bot)
+}
+
+func (db *DatabaseConnection) AddText(text *PasteText) {
+	db.Create(text)
+}
+
+func (db *DatabaseConnection) GetText(code string) (text PasteText) {
+	db.Where("code = ?", code).First(&text)
+	return text;
 }

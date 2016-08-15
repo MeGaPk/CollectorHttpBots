@@ -10,6 +10,7 @@ import (
 	"os"
 	"github.com/gorilla/handlers"
 	"flag"
+	"github.com/satori/go.uuid"
 )
 
 var db *database.DatabaseConnection
@@ -44,6 +45,27 @@ func GetUrls(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+func GetText(w http.ResponseWriter, r *http.Request) {
+	code := string(r.Header.Get("code"))
+	w.Write(db.GetText(code))
+}
+
+func AddText(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	token := string(r.Header.Get("token"))
+	if (token != "Tosterito112Toster112") {
+		w.Write("Something wrong...")
+		return
+	}
+	text := string(r.Body)
+	code := uuid.NewV4()
+	db.AddText(&database.PasteText{
+		Code: code,
+		Text:text,
+	})
+	w.Write(code)
+}
+
 var type_database string
 var port int
 var hostname string
@@ -71,6 +93,8 @@ func main() {
 
 	r := http.NewServeMux()
 	r.HandleFunc("/get_urls", GetUrls)
+	r.HandleFunc("/uploader/add_text", AddText)
+	r.HandleFunc("/uploader/get_text", GetText)
 	r.Handle("/", handlers.LoggingHandler(os.Stdout, http.HandlerFunc(handler)))
 	http.ListenAndServe(fmt.Sprintf(":%d", port), handlers.CompressHandler(r))
 }
