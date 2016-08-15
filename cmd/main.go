@@ -53,8 +53,8 @@ func GetText(w http.ResponseWriter, r *http.Request) {
 
 func AddText(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	token := string(r.Header.Get("token"))
-	if (token != "Tosterito112Toster112") {
+	t := string(r.Header.Get("token"))
+	if (t != token) {
 		w.Write([]byte("Something wrong..."))
 		return
 	}
@@ -79,6 +79,7 @@ var port_database int
 var login string
 var password string
 var dbname string
+var token string
 
 func main() {
 	flag.StringVar(&type_database, "type_database", "sqlite", "type (mysql/sqlite)")
@@ -86,6 +87,7 @@ func main() {
 	flag.StringVar(&login, "login", "root", "login")
 	flag.StringVar(&password, "password", "root", "password")
 	flag.StringVar(&dbname, "dbname", "db", "database name")
+	flag.StringVar(&token, "token", "token", "token")
 	flag.IntVar(&port_database, "port_database", 3306, "port number for mysql server")
 	flag.IntVar(&port, "port", 8080, "port number for http server")
 	flag.Parse()
