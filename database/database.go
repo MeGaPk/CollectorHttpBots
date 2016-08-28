@@ -9,11 +9,11 @@ import (
 
 type Bot struct {
 	gorm.Model
-	Link     string
-	Header   string
-	Body     string
-	Form     string
-	PostForm string
+	Link     string `gorm:"size:999999999"`
+	Header   string `gorm:"size:999999999"`
+	Body     string `gorm:"size:999999999"`
+	Form     string `gorm:"size:999999999"`
+	PostForm string `gorm:"size:999999999"`
 	RemoteIp string
 }
 
